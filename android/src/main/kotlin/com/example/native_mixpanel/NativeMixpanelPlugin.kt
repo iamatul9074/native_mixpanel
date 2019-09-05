@@ -32,13 +32,15 @@ class NativeMixpanelPlugin: MethodCallHandler {
 
     } else if(call.method == "identify") {
       mixpanel?.identify(call.arguments.toString())
+      mixpanel?.getPeople()?.identify(call.arguments.toString());
       result.success("Identify success..")
 
     } else if(call.method == "alias") {
       mixpanel?.alias(call.arguments.toString(), mixpanel?.getDistinctId())
       result.success("Alias success..")
 
-    } else if(call.method == "setPeopleProperties") {
+    } else if(call.method == "s" +
+            "etPeopleProperties") {
       if (call.arguments == null) {
         result.error("Parse Error", "Arguments required for setPeopleProperties platform call", null)
       } else {
@@ -57,6 +59,8 @@ class NativeMixpanelPlugin: MethodCallHandler {
     } else if (call.method == "reset") {
       mixpanel?.reset()
       result.success("Reset success..")
+    } else if (call.method == "pushToken") {
+     //nothing
     } else if (call.method == "flush") {
       mixpanel?.flush()
       result.success("Flush success..")

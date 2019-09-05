@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/services.dart';
 import 'package:flutter/foundation.dart' show debugPrint;
@@ -18,10 +19,10 @@ class _MixpanelOptedOut extends _Mixpanel {
 }
 
 class _MixpanelOptedIn extends _Mixpanel {
-  final MethodChannel _channel = const MethodChannel('native_mixpanel');
+  final MethodChannel channel = const MethodChannel('native_mixpanel');
 
   Future track(String eventName, [dynamic props]) async {
-    return await _channel.invokeMethod(eventName, props);
+    return await channel.invokeMethod(eventName, props);
   }
 }
 
@@ -42,7 +43,7 @@ class _MixpanelDebugged extends _Mixpanel {
 }
 
 class Mixpanel extends _Mixpanel {
-
+  final MethodChannel channel = const MethodChannel('native_mixpanel');
   final bool shouldLogEvents;
   final bool isOptedOut;
 
@@ -59,12 +60,36 @@ class Mixpanel extends _Mixpanel {
     else _mp = _mixpanel;
   }
 
+  Future<dynamic> getDeviceToken() {
+    if (Platform.isIOS) {
+      return channel.invokeMethod('getDeviceToken');
+    } else {
+      return Future<String>.value("The function is only support iOS");
+    }
+  }
+
+  Future<dynamic> requestNotificationsPermission({bool sound, bool badge, bool alert}) {
+    if (Platform.isIOS) {
+      return channel.invokeMethod('requestNotificationsPermission', {
+        'sound': sound,
+        'badge': badge,
+        'alert': alert
+      });
+    } else {
+      return Future<String>.value("The function is only support iOS");
+    }
+  }
+
   Future initialize(String token) {
     return this._mp.track('initialize', token);
   }
 
   Future identify(String distinctId) {
     return this._mp.track('identify', distinctId);
+  }
+
+  Future pushToken() {
+    return this._mp.track('pushToken');
   }
 
   Future alias(String alias) {
