@@ -91,6 +91,9 @@ import Mixpanel
         Mixpanel.mainInstance().identify(distinctId: call.arguments as! String)
       } else if(call.method == "alias") {
         Mixpanel.mainInstance().createAlias(call.arguments as! String, distinctId: Mixpanel.mainInstance().distinctId)
+      } else if(call.method == "aliasNull") {
+        Mixpanel.mainInstance().createAlias(call.arguments as! String, distinctId: Mixpanel.mainInstance().distinctId)
+        Mixpanel.mainInstance().identify(distinctId: Mixpanel.mainInstance().distinctId)
       } else if(call.method == "setPeopleProperties") {
         if let argProperties = try self.getPropertiesFromArguments(callArguments: call.arguments) {
           Mixpanel.mainInstance().people.set(properties: argProperties)

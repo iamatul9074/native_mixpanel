@@ -39,6 +39,11 @@ class NativeMixpanelPlugin: MethodCallHandler {
       mixpanel?.alias(call.arguments.toString(), mixpanel?.getDistinctId())
       result.success("Alias success..")
 
+    } else if(call.method == "aliasNull") {
+        mixpanel?.alias(call.arguments.toString(), null)
+        mixpanel?.getPeople()?.identify(mixpanel?.getDistinctId());
+        result.success("Alias success..")
+
     } else if(call.method == "s" +
             "etPeopleProperties") {
       if (call.arguments == null) {
@@ -66,11 +71,11 @@ class NativeMixpanelPlugin: MethodCallHandler {
       result.success("Flush success..")
     } else {
       if(call.arguments == null) {
-        mixpanel?.track(call.method)  
+        mixpanel?.track(call.method)
       } else {
         val json = JSONObject(call.arguments.toString())
         mixpanel?.track(call.method, json)
-      }      
+      }
       result.success("Track success..")
     }
   }

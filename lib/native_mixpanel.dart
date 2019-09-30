@@ -96,6 +96,10 @@ class Mixpanel extends _Mixpanel {
     return this._mp.track('alias', alias);
   }
 
+  Future aliasNull(String alias) {
+    return this._mp.track('aliasNull', alias);
+  }
+
   Future setPeopleProperties(Map<String, dynamic> props) {
     return this._mp.track('setPeopleProperties', jsonEncode(props));
   }
