@@ -95,11 +95,16 @@ import Mixpanel
         Mixpanel.mainInstance().createAlias(call.arguments as! String, distinctId: Mixpanel.mainInstance().distinctId)
         Mixpanel.mainInstance().identify(distinctId: Mixpanel.mainInstance().distinctId)
       } else if(call.method == "setPeopleProperties") {
-        if let argProperties = try self.getPropertiesFromArguments(callArguments: call.arguments) {
-          Mixpanel.mainInstance().people.set(properties: argProperties)
-        } else {
-          result(FlutterError(code: "Parse Error", message: "Could not parse arguments for setPeopleProperties platform call. Needs valid JSON data.", details: nil))
-        }
+            if let arguments = call.arguments, let data = (arguments as! String).data(using: .utf8) {
+                let properties = try JSONSerialization.jsonObject(with: data, options: []) as! [String:Any]
+                var argProperties = [String: String]()
+                for (key, value) in properties {
+                    argProperties[key] = String(describing: value)
+                    if let content = argProperties[key] {
+                         Mixpanel.mainInstance().people?.set(property:key ,to:content)
+                    }
+                }
+            }
       } else if(call.method == "registerSuperProperties") {
         if let argProperties = try self.getPropertiesFromArguments(callArguments: call.arguments) {
           Mixpanel.mainInstance().registerSuperProperties(argProperties)
@@ -108,6 +113,8 @@ import Mixpanel
         }
       } else if(call.method == "reset") {
         Mixpanel.mainInstance().reset()
+      } else if(call.method == "getDistinctId") {
+        result(Mixpanel.mainInstance().distinctId)
       } else if(call.method == "flush") {
         Mixpanel.mainInstance().flush()
       } else if let argProperties = try self.getPropertiesFromArguments(callArguments: call.arguments) {
